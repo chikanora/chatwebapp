@@ -1,0 +1,6 @@
+{
+  "proxy": "http://localhost:8000",
+  "dependencies": {
+    "net": "^1.0.2"
+  }
+}
