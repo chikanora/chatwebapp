@@ -21,46 +21,49 @@ import java.util.List;
 @RequestMapping("/chatroom")
 public class ChatController
 {
+    // Used to send messages to WebSocket clients
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
+    // Viewing previous messages
     private List<Message> chatHistory = new ArrayList<>();
 
     @MessageMapping("/receive-message") // /app/message
     @SendTo("/chatroom/public")
     public Message receivePublicMessage(@Payload Message message)
     {
-        return message;
+        return message; // Return the received message to be sent to the registered users
     }
 
     @MessageMapping("/send-message")
     @SendTo("/chatroom")
     public Message sendMessage(@Payload Message message)
     {
-        System.out.println("Received message: " + message);
-        return message;
+        System.out.println("Received message: " + message); // Debugging log
+        return message; // Return the received message to be broadcasted to all users
     }
 
     @MessageMapping("/receive-private-message")
     public Message receivePrivateMessage(@Payload Message message)
     {
+        // Send the private message to the user using SimpMessagingTemplate
         simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(), "/private", message); // /user/(USER)/private
-        System.out.println(message.toString());
-        return message;
+        System.out.println(message.toString()); // Debugging log
+        return message; // Returns the message to the other recipient
     }
 
     @MessageMapping("/send-private-message")
     @SendToUser("/user/private")
     public Message sendPrivateMessage(@Payload Message message)
     {
-        System.out.println("Received private message: " + message);
-        return message;
+        System.out.println("Received private message: " + message); // Debugging log
+        return message; // Return the previous message to be sent to the selected user chatting
     }
 
-    // New endpoint to get chat history
+    // Endpoint to get chat history
     @GetMapping("/history")
     public List<Message> getChatHistory()
     {
-        return chatHistory;
+        return chatHistory; // Return the stored chat history
     }
 }
